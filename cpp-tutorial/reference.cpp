@@ -60,3 +60,9 @@ int main() {
 //   change_val(&number);
 //   std::cout << number << std::endl;
 // }
+
+
+// 레퍼런스의 배열과 배열의 레퍼런스
+// int a,b;
+// int& arr[2] = {a,b} // X
+
