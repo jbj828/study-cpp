@@ -26,7 +26,6 @@ class Geometry {
 
   void AddPoint(const Point &point);
   void PrintDistance();
-  void PrintNumMeets();
 };
 
 void Geometry::AddPoint(const Point &point) {
@@ -40,19 +39,16 @@ void Geometry::PrintDistance() {
     Point *curr = point_array[i];
     Point *next = point_array[i + 1];
 
-    int currX = curr->GetX();
-    int currY = curr->GetY();
-    int nextX = next->GetX();
-    int nextY = next->GetY();
+    int curr_x = curr->GetX();
+    int curr_y = curr->GetY();
+    int next_x = next->GetX();
+    int next_y = next->GetY();
 
-    int sqrtDist = pow(currX - nextX, 2) + pow(currY - nextY, 2);
+    int pow_dist = pow(curr_x - next_x, 2) + pow(curr_y - next_y, 2);
 
-    double dist = sqrt(sqrtDist);
+    double dist = sqrt(pow_dist);
     distance += dist;
   }
-  std::cout << 'Distance between all the Point is ' << distance << std::endl;
-};
-
-void Geometry::PrintNumMeets(){
-
+  std::cout << 'The total distance between all the Point is ' << distance
+            << std::endl;
 };
