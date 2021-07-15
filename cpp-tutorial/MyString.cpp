@@ -30,6 +30,11 @@ class MyString {
   // assign
   MyString& assign(const MyString& str);
   MyString& assign(const char* str);
+
+  // insert
+  MyString& insert(int loc, const MyString& str);
+  MyString& insert(int loc, const char* str);
+  MyString& insert(int loc, char c);
 };
 
 // ===================== 생성자 ===============
@@ -127,12 +132,61 @@ char MyString::at(int i) const {
     return string_content[i];
 }
 
+// insert
+MyString& MyString::insert(int loc, const MyString& str) {
+  if (loc < 0) {
+    std::cout << "The location has to be positive number or zero." << std::endl;
+    return *this;
+  }
+  if (str.length() <= 0) {
+    std::cout << "Inserted string is empty" << std::endl;
+    return *this;
+  }
+
+  int total_length = string_length + str.length();
+  char* temp_content = string_content;
+  if (memory_capacity < total_length) {
+    // 새로운 메모리 할당
+    delete[] string_content;
+    string_content = new char[total_length + 1];
+    string_length = total_length + 1;
+  }
+
+  if (loc == 0) {
+    assign(str);
+    for (int i = str.length(); i < string_length; i++) {
+      string_content[i] = temp_content[i];
+    }
+  } else {
+    for (int i = 0; i < loc - 1; i++) {
+      string_content[i] = temp_content[i];
+    }
+    for (int i = loc; i < str.length() + loc; i++) {
+      string_content[i] = str.at(i - loc);
+    }
+    for (int i = str.length() + loc; i < string_length; i++) {
+      string_content[i] = temp_content[i - str.length() - 1];
+    }
+  }
+  return *this;
+}
+
+MyString& MyString::insert(int loc, const char* str) {
+  MyString temp(str);
+  return insert(loc, temp);
+}
+
+MyString& MyString::insert(int loc, char c) {
+  MyString temp(c);
+  return insert(loc, temp);
+}
+
 // ========================MAIN====================
 int main() {
-  MyString str1("very very very long string");
-  str1.reserve(30);
+  MyString str1("abcdefghijklmnop");
+  MyString str2("ZEBRA");
 
-  std::cout << "Capacity: " << str1.capacity() << std::endl;
-  std::cout << "String Length: " << str1.length() << std::endl;
+  str1.insert(4, str2);
+
   str1.println();
 }
