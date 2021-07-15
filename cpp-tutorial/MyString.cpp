@@ -20,6 +20,9 @@ class MyString {
 
   // 문자열의 길이를 구한다
   int length() const;
+  int capacity() const;
+  char at(int i) const;
+  void reserve(int size);
 
   void print() const;
   void println() const;
@@ -33,17 +36,20 @@ class MyString {
 MyString::MyString(char c) {
   string_content = new char[1];
   string_content[0] = c;
+  memory_capacity = 1;
   string_length = 1;
 }
 
 MyString::MyString(const char* str) {
   string_length = strlen(str);
+  memory_capacity = string_length;
   string_content = new char[string_length];
   for (int i = 0; i < string_length; i++) string_content[i] = str[i];
 }
 
 MyString::MyString(const MyString& str) {
   string_length = str.string_length;
+  memory_capacity = string_length;
   string_content = new char[string_length];
   for (int i = 0; i < string_length; i++) {
     string_content[i] = str.string_content[i];
@@ -97,11 +103,36 @@ MyString& MyString::assign(const char* str) {
   return *this;
 }
 
+int MyString::capacity() const { return memory_capacity; }
+
+void MyString::reserve(int size) {
+  if (size > memory_capacity) {
+    char* prev_string_content = string_content;
+
+    string_content = new char[size];
+    memory_capacity = size;
+
+    for (int i = 0; i != string_length; i++) {
+      string_content[i] = prev_string_content[i];
+    }
+
+    delete[] prev_string_content;
+  }
+}
+
+char MyString::at(int i) const {
+  if (i >= string_length || i < 0)
+    return NULL;
+  else
+    return string_content[i];
+}
+
 // ========================MAIN====================
 int main() {
-  MyString str1("Hello world!");
-  MyString str2(str1);
+  MyString str1("very very very long string");
+  str1.reserve(30);
 
+  std::cout << "Capacity: " << str1.capacity() << std::endl;
+  std::cout << "String Length: " << str1.length() << std::endl;
   str1.println();
-  str2.println();
 }
