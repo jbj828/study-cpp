@@ -38,6 +38,14 @@ class MyString {
 
   // erase
   MyString& erase(int loc, int num);
+
+  // find
+  int find(int find_from, MyString& str) const;
+  int find(int find_from, const char* str) const;
+  int find(int find_from, char c) const;
+
+  // compare
+  int compare(const MyString& str) const;
 };
 
 // ===================== 생성자 ===============
@@ -130,7 +138,7 @@ void MyString::reserve(int size) {
 
 char MyString::at(int i) const {
   if (i >= string_length || i < 0)
-    return NULL;
+    return '\0';
   else
     return string_content[i];
 }
@@ -202,10 +210,55 @@ MyString& MyString::erase(int loc, int num) {
   return *this;
 }
 
+// find
+int MyString::find(int find_from, MyString& str) const {
+  int i, j;
+
+  if (str.string_length == 0) return -1;
+  for (i = find_from; i <= string_length - str.string_length; i++) {
+    for (j = 0; j < str.string_length; j++) {
+      if (string_content[i + j] != str.string_content[j]) break;
+    }
+
+    if (j == str.string_length) return i;
+  }
+
+  return -1;
+}
+
+int MyString::find(int find_from, const char* str) const {
+  MyString temp(str);
+  return find(find_from, temp);
+}
+
+int MyString::find(int find_from, char c) const {
+  MyString temp(c);
+  return find(find_from, temp);
+}
+
+// compare
+int MyString::compare(const MyString& str) const {
+  for (int i = 0; i < std::min(string_length, str.string_length); i++) {
+    if (string_content[i] > str.string_content[i]) {
+      return 1;
+    } else if (string_content[i] < str.string_content[i]) {
+      return -1;
+    }
+  }
+
+  if (string_length == str.string_length)
+    return 0;
+  else if (string_length > str.string_length)
+    return 1;
+
+  return -1;
+}
+
 // ========================MAIN====================
 int main() {
   MyString str1("abcdefghijklmnop");
-  str1.erase(5, 3);
+  MyString str2("hi");
+  int result = str1.find(3, str2);
 
-  str1.println();
+  std::cout << result << std::endl;
 }
