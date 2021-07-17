@@ -11,6 +11,9 @@ class MyString {
   // 문자 하나로 생성
   MyString(char c);
 
+  // capacity 만큼 미리 할당함
+  explicit MyString(int capacity);
+
   // 문자열로 부터 생성
   MyString(const char* str);
 
@@ -54,6 +57,13 @@ MyString::MyString(char c) {
   string_content[0] = c;
   memory_capacity = 1;
   string_length = 1;
+}
+
+MyString::MyString(int capacity) {
+  string_content = new char[capacity];
+  string_length = 0;
+  memory_capacity = capacity;
+  std::cout << "Capacity: " << capacity << std::endl;
 }
 
 MyString::MyString(const char* str) {
