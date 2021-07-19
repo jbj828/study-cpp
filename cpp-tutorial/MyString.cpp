@@ -49,6 +49,8 @@ class MyString {
 
   // compare
   int compare(const MyString& str) const;
+
+  char& operator[](const int index);
 };
 
 // ===================== 생성자 ===============
@@ -263,6 +265,8 @@ int MyString::compare(const MyString& str) const {
 
   return -1;
 }
+
+char& MyString::operator[](const int index) { return string_content[index]; }
 
 // ========================MAIN====================
 int main() {
