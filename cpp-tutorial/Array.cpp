@@ -20,6 +20,70 @@ class Array {
   Address* top;
 
  public:
+  class Iterator {
+    int* location;
+    Array* arr;
+
+    friend Int;
+
+   public:
+    Iterator(Array* arr, int* loc = NULL) : arr(arr) {
+      location = new int[arr->dim];
+      for (int i = 0; i != arr->dim; i++)
+        location[i] = (loc != NULL ? loc[i] : 0);
+    }
+    Iterator(const Iterator& itr) : arr(itr.arr) {
+      location = new int[arr->dim];
+      for (int i = 0; i != arr->dim; i++) location[i] = itr.location[i];
+    }
+    ~Iterator() { delete[] location; }
+    // 다음 원소를 가리키게 된다.
+    Iterator& operator++() {
+      if (location[0] >= arr->size[0]) return (*this);
+
+      bool carry = false;  // 받아 올림이 있는지
+      int i = arr->dim - 1;
+      do {
+        // 어차피 다시 돌아온다는 것은 carry 가 true
+        // 라는 의미 이므로 ++ 을 해야 한다.
+        location[i]++;
+        if (location[i] >= arr->size[i] && i >= 1) {
+          // i 가 0 일 경우 0 으로 만들지 않는다 (이러면 begin 과 중복됨)
+          location[i] -= arr->size[i];
+          carry = true;
+          i--;
+        } else
+          carry = false;
+
+      } while (i >= 0 && carry);
+
+      return (*this);
+    }
+    Iterator& operator=(const Iterator& itr) {
+      arr = itr.arr;
+      location = new int[itr.arr->dim];
+      for (int i = 0; i != arr->dim; i++) location[i] = itr.location[i];
+
+      return (*this);
+    }
+    Iterator operator++(int) {
+      Iterator itr(*this);
+      ++(*this);
+      return itr;
+    }
+    bool operator!=(const Iterator& itr) {
+      if (itr.arr->dim != arr->dim) return true;
+
+      for (int i = 0; i != arr->dim; i++) {
+        if (itr.location[i] != location[i]) return true;
+      }
+
+      return false;
+    }
+    Int operator*();
+  };
+
+  friend Iterator;
   Array(int dim, int* array_size) : dim(dim) {
     size = new int[dim];
     for (int i = 0; i < dim; i++) size[i] = array_size[i];
@@ -53,6 +117,7 @@ class Array {
       copy_address(new_dst, new_src);
     }
   }
+
   // address 를 초기화 하는 함수이다. 재귀 호출로 구성되어 있다.
   void initialize_address(Address* current) {
     if (!current) return;
@@ -81,6 +146,26 @@ class Array {
   ~Array() {
     delete_address(top);
     delete[] size;
+  }
+
+  Iterator begin() {
+    int* arr = new int[dim];
+    for (int i = 0; i != dim; i++) arr[i] = 0;
+
+    Iterator temp(this, arr);
+    delete[] arr;
+
+    return temp;
+  }
+  Iterator end() {
+    int* arr = new int[dim];
+    arr[0] = size[0];
+    for (int i = 1; i < dim; i++) arr[i] = 0;
+
+    Iterator temp(this, arr);
+    delete[] arr;
+
+    return temp;
   }
 };
 class Int {
@@ -127,15 +212,27 @@ class Int {
 Int Array::operator[](const int index) {
   return Int(index, 1, static_cast<void*>(top), this);
 }
+Int Array::Iterator::operator*() {
+  Int start = arr->operator[](location[0]);
+  for (int i = 1; i <= arr->dim - 1; i++) {
+    start = start.operator[](location[i]);
+  }
+  return start;
+}
 }  // namespace MyArray
 int main() {
   int size[] = {2, 3, 4};
   MyArray::Array arr(3, size);
 
+  MyArray::Array::Iterator itr = arr.begin();
+  for (int i = 0; itr != arr.end(); itr++, i++) (*itr) = i;
+  for (itr = arr.begin(); itr != arr.end(); itr++)
+    std::cout << *itr << std::endl;
+
   for (int i = 0; i < 2; i++) {
     for (int j = 0; j < 3; j++) {
       for (int k = 0; k < 4; k++) {
-        arr[i][j][k] = (i + 1) * (j + 1) * (k + 1);
+        arr[i][j][k] = (i + 1) * (j + 1) * (k + 1) + arr[i][j][k];
       }
     }
   }
