@@ -1,8 +1,0 @@
-<<<<<<< HEAD
-Hello sdlkfjasflkasjfl;asfjl
-saldfjksdf
-sadlfkjsdf
-sdlfkjsdflksdjflsakdfjsdf
-=======
-Name :: 정병재 / Age :: 28
->>>>>>> 9d1cd8e4d004915736218f184a8bc84e913af8b8
