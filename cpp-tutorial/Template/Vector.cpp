@@ -10,6 +10,9 @@ class Vector {
   int length;
 
  public:
+  // 어떤 타입을
+  typedef T value_type;
+
   Vector(int n = 1) : data(new T[n]), capacity(n), length(0) {}
 
   void push_back(T s) {
@@ -46,6 +49,71 @@ class Vector {
   }
 };
 
+template <>
+class Vector<bool> {
+  unsigned int* data;
+  int capacity;
+  int length;
+
+ public:
+  typedef bool value_type;
+
+  // 생성자
+  Vector(int n = 1)
+      : data(new unsigned int[n / 32 + 1]), capacity(n / 32 + 1), length(0) {
+    for (int i = 0; i < capacity; i++) {
+      data[i] = 0;
+    }
+  }
+
+  void push_back(bool s) {
+    if (capacity * 32 <= length) {
+      unsigned int* temp = new unsigned int[capacity * 2];
+      for (int i = 0; i < capacity; i++) {
+        temp[i] = data[i];
+      }
+      for (int i = capacity; i < 2 * capacity; i++) {
+        temp[i] = 0;
+      }
+
+      delete[] data;
+      data = temp;
+      capacity *= 2;
+    }
+
+    if (s) {
+      data[length / 32] |= (1 << (length % 32));
+    }
+
+    length++;
+  }
+
+  bool operator[](int i) { return (data[i / 32] & (1 << (i % 32))) != 0; }
+
+  void remove(int x) {
+    for (int i = x + 1; i < length; i++) {
+      int prev = i - 1;
+      int curr = i;
+
+      if (data[curr / 32] & (1 << (curr % 32))) {
+        data[prev / 32] |= (1 << (prev % 32));
+      } else {
+        unsigned int all_ones_except_prev = 0xFFFFFFFF;
+        all_ones_except_prev ^= (1 << (prev % 32));
+        data[prev / 32] &= all_ones_except_prev;
+      }
+    }
+    length--;
+  }
+
+  int size() { return length; }
+  ~Vector() {
+    if (data) {
+      delete[] data;
+    }
+  }
+};
+
 int main() {
   // int 를 보관하는 벡터를 만든다
   Vector<int> int_vec;
@@ -58,4 +126,29 @@ int main() {
   Vector<string> string_vec;
   string_vec.push_back("hello");
   cout << string_vec[0] << endl;
+
+  Vector<bool> bool_vec;
+  bool_vec.push_back(true);
+  bool_vec.push_back(true);
+  bool_vec.push_back(false);
+  bool_vec.push_back(false);
+  bool_vec.push_back(false);
+  bool_vec.push_back(true);
+  bool_vec.push_back(false);
+  bool_vec.push_back(true);
+  bool_vec.push_back(false);
+  bool_vec.push_back(true);
+  bool_vec.push_back(false);
+  bool_vec.push_back(true);
+  bool_vec.push_back(false);
+  bool_vec.push_back(true);
+  bool_vec.push_back(false);
+  bool_vec.push_back(true);
+  bool_vec.push_back(false);
+
+  cout << "===========bool vector=========" << endl;
+  for (int i = 0; i < bool_vec.size(); i++) {
+    cout << bool_vec[i];
+  }
+  cout << endl;
 }
